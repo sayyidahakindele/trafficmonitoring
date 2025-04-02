@@ -182,7 +182,7 @@ class Window:
             [(530, 290), (530, 335)],  # Example crosswalk 4 (vertical)
         ]
 
-        stripe_width = 10  # Width of each stripe
+        stripe_width = 15  # Width of each stripe
         stripe_length = 1  # Length of each stripe
         stripe_gap = 1  # Gap between stripes
 
@@ -198,12 +198,11 @@ class Window:
                 for y in range(start[1], end[1], stripe_length + stripe_gap):
                     color = (0, 0, 0) if (y // (stripe_length + stripe_gap)) % 2 == 0 else (255, 255, 255)
                     pygame.draw.rect(self._screen, color, (x - stripe_width // 2, y, stripe_width, stripe_length))
-
     def _draw_pedestrians(self):
          # Example pedestrian
         for pedestrian_gen in self._sim.pedestrian_generators:
             for pedestrian in pedestrian_gen._crossing_requests:
-                print(f"Pedestrian{pedestrian_gen} at ({pedestrian.x}, {pedestrian.y}), crossing: {pedestrian.is_crossing}")
+                # print(f"Pedestrian{pedestrian_gen} at ({pedestrian.x}, {pedestrian.y}), crossing: {pedestrian.is_crossing}")
                 # Set color based on pedestrian state
                 color = (255, 165, 0)
                 
@@ -247,7 +246,7 @@ class Window:
         self._screen.fill(self._background_color)
         self._draw_roads()
         self._draw_vehicles()
-        # self._draw_crosswalks()
+        self._draw_crosswalks()
         self._draw_pedestrians()
         self._draw_signals()
         self._draw_status()

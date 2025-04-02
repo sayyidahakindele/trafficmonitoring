@@ -89,6 +89,21 @@ ROADS = [
     *NORTH_LEFT_TURN
 ]
 
+def calculate_crosswalks():
+    crosswalks = []
+
+    intersection_x = 500  # Center of the intersection horizontally
+    intersection_y = 315  # Center of the intersection vertically
+
+    # Horizontal crosswalks (WEST-EAST)
+    crosswalks.append(((470, 290), (530, 290)))  # Top crosswalk
+    crosswalks.append(((WEST_RIGHT[0], intersection_y + 5), (EAST_LEFT[0], intersection_y + 5)))  # Bottom crosswalk
+
+    # Vertical crosswalks (SOUTH-NORTH)
+    crosswalks.append(((intersection_x - 5, SOUTH_RIGHT[1]), (intersection_x - 5, NORTH_LEFT[1])))  # Left crosswalk
+    crosswalks.append(((intersection_x + 5, SOUTH_RIGHT[1]), (intersection_x + 5, NORTH_LEFT[1])))  # Right crosswalk
+
+    return crosswalks
 
 def turn(t): return range(t, t + n)
 
@@ -128,7 +143,7 @@ PEDESTRIAN_PATHS = [
     [470, 290, 530, 290],  # Example crosswalk 1 (horizontal)
     [470, 290, 470, 335],  # Example crosswalk 2 (vertical)
     [470, 335, 530, 335],  # Example crosswalk 3 (horizontal)
-    [530, 290, 530, 335], # Example crosswalk 2
+    [530, 290, 530, 335],  # Example crosswalk 24 (vertical)
 ]
 
 # Intersections {main_road: intersecting_roads}
@@ -165,6 +180,10 @@ STOP_DISTANCE = 15
 def two_way_intersection_setup(max_gen=None):
     sim = Simulation(max_gen)
     sim.add_roads(ROADS)
+    CROSSWALKS = calculate_crosswalks()
+    print(CROSSWALKS)
+    for i, (start, end) in enumerate(CROSSWALKS):
+        sim.add_crosswalk(i, start, end)
     sim.add_generator(VEHICLE_RATE, PATHS)
     sim.add_pedestrian_generator(PEDESTRIAN_RATE, PEDESTRIAN_PATHS)
     sim.add_traffic_signal(SIGNAL_ROADS, CYCLE, SLOW_DISTANCE, SLOW_FACTOR, STOP_DISTANCE)

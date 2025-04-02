@@ -16,7 +16,7 @@ class Pedestrian:
 
     def update_state(self, can_cross: bool):
         """Update pedestrian state based on whether they can cross."""
-        if can_cross:
+        if can_cross or self._is_in_crosswalk():
             self.is_crossing = True
             self.waiting_time = 0
             self._move_towards_destination()
@@ -50,3 +50,14 @@ class Pedestrian:
             step_size = 0.1
             self.x += step_size * (dx / distance)
             self.y += step_size * (dy / distance)
+
+    def _is_in_crosswalk(self) -> bool:
+        """Check if the pedestrian is already in the crosswalk."""
+        crosswalk_start_x, crosswalk_start_y = self.path[0], self.path[1]
+        crosswalk_end_x, crosswalk_end_y = self.path[2], self.path[3]
+
+        # Check if the pedestrian is between the start and end of the crosswalk
+        in_x_range = min(crosswalk_start_x, crosswalk_end_x) <= self.x <= max(crosswalk_start_x, crosswalk_end_x)
+        in_y_range = min(crosswalk_start_y, crosswalk_end_y) <= self.y <= max(crosswalk_start_y, crosswalk_end_y)
+
+        return in_x_range and in_y_range

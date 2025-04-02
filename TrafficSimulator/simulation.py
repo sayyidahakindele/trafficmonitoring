@@ -47,6 +47,13 @@ class Simulation:
         for road in roads:
             self.add_road(*road)
 
+
+    def add_crosswalk(self, road_index: int, start: Tuple[int, int], end: Tuple[int, int]) -> None:
+        if 0 <= road_index < len(self.roads):
+            self.roads[road_index].add_crosswalk(start, end)
+        else:
+            raise IndexError(f"Road index {road_index} is out of bounds.")
+
     def add_generator(self, vehicle_rate, paths: List[List]) -> None:
         inbound_roads: List[Road] = [self.roads[roads[0]] for weight, roads in paths]
         inbound_dict: Dict[int: Road] = {road.index: road for road in inbound_roads}
@@ -60,7 +67,6 @@ class Simulation:
         """Add a pedestrian generator to the simulation."""
         pedestrian_generator = PedestrianGenerator(pedestrian_rate, paths)
         self.pedestrian_generators.append(pedestrian_generator)
-        print(self.pedestrian_generators)
 
 
     def add_traffic_signal(self, roads: List[List[int]], cycle: List[Tuple],
