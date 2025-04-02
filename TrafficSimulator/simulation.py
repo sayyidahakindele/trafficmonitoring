@@ -6,6 +6,7 @@ from scipy.spatial import distance
 from TrafficSimulator.road import Road
 from TrafficSimulator.traffic_signal import TrafficSignal
 from TrafficSimulator.vehicle_generator import VehicleGenerator
+from TrafficSimulator.pedestrian_generator import PedestrianGenerator
 from TrafficSimulator.window import Window
 
 
@@ -15,6 +16,8 @@ class Simulation:
         self.dt = 1 / 60  # Time step
         self.roads: List[Road] = []
         self.generators: List[VehicleGenerator] = []
+        self.pedestrian_generators: List[PedestrianGenerator] = []
+
         self.traffic_signals: List[TrafficSignal] = []
 
         self.collision_detected: bool = False
@@ -49,10 +52,16 @@ class Simulation:
         inbound_dict: Dict[int: Road] = {road.index: road for road in inbound_roads}
         vehicle_generator = VehicleGenerator(vehicle_rate, paths, inbound_dict)
         self.generators.append(vehicle_generator)
-
         for (weight, roads) in paths:
             self._inbound_roads.add(roads[0])
             self._outbound_roads.add(roads[-1])
+    
+    def add_pedestrian_generator(self, pedestrian_rate: int, paths: List[List]):
+        """Add a pedestrian generator to the simulation."""
+        pedestrian_generator = PedestrianGenerator(pedestrian_rate, paths)
+        self.pedestrian_generators.append(pedestrian_generator)
+        print(self.pedestrian_generators)
+
 
     def add_traffic_signal(self, roads: List[List[int]], cycle: List[Tuple],
                            slow_distance: float, slow_factor: float, stop_distance: float) -> None:
@@ -125,6 +134,14 @@ class Simulation:
             self._gui = Window(self)
         self._gui.update()
 
+    def can_pedestrians_cross(self) -> bool:
+        """Determine if pedestrians can cross based on the traffic signal state."""
+        # Example logic: Check the pedestrian signal state for all signals
+        for signal in self.traffic_signals:
+            if signal.get_pedestrian_signal() == "Walk":
+                return True
+        return False
+
     def run(self, action: Optional[int] = None) -> None:
         """ Performs n simulation updates. Terminates early upon completion or GUI closing
         :param action: an action from a reinforcement learning environment action space
@@ -156,6 +173,9 @@ class Simulation:
                 self.n_vehicles_on_map += 1
                 self._non_empty_roads.add(road_index)
 
+        can_cross = self.can_pedestrians_cross()
+        for pedestrian_gen in self.pedestrian_generators:
+            pedestrian_gen.update(self.t, can_cross)
         self._check_out_of_bounds_vehicles()
 
         self._detect_collisions()

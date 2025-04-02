@@ -123,6 +123,14 @@ PATHS = [
     # [1, [3, *t117, 6]]  # NORTH LEFT EAST
 ]
 
+PEDESTRIAN_RATE = 0.1
+PEDESTRIAN_PATHS = [
+    [470, 290, 530, 290],  # Example crosswalk 1 (horizontal)
+    [470, 290, 470, 335],  # Example crosswalk 2 (vertical)
+    [470, 335, 530, 335],  # Example crosswalk 3 (horizontal)
+    [530, 290, 530, 335], # Example crosswalk 2
+]
+
 # Intersections {main_road: intersecting_roads}
 d1 = {8: {9, 11, *t42, *t57, *t87, *t117}}
 d2 = {9: {10, *t12, *t27, *t72, *t87, *t117}}
@@ -158,6 +166,7 @@ def two_way_intersection_setup(max_gen=None):
     sim = Simulation(max_gen)
     sim.add_roads(ROADS)
     sim.add_generator(VEHICLE_RATE, PATHS)
+    sim.add_pedestrian_generator(PEDESTRIAN_RATE, PEDESTRIAN_PATHS)
     sim.add_traffic_signal(SIGNAL_ROADS, CYCLE, SLOW_DISTANCE, SLOW_FACTOR, STOP_DISTANCE)
     sim.add_intersections(INTERSECTIONS_DICT)
     return sim
