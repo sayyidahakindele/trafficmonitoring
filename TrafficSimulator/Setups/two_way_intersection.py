@@ -181,7 +181,6 @@ def two_way_intersection_setup(max_gen=None):
     sim = Simulation(max_gen)
     sim.add_roads(ROADS)
     CROSSWALKS = calculate_crosswalks()
-    print(CROSSWALKS)
     for i, (start, end) in enumerate(CROSSWALKS):
         sim.add_crosswalk(i, start, end)
     sim.add_generator(VEHICLE_RATE, PATHS)

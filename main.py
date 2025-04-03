@@ -15,7 +15,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.method in ['fc', 'lqf']:
         default_cycle(n_episodes=args.episodes, action_func_name=args.method, render=args.render)
-    elif args.method == 'qlearning':
-        q_learning(n_episodes=args.episodes, render=args.render)
-    elif args.method == 'search':
-        search(episodes=args.episodes, render=args.render)
+    else:
+        print("Not set up yet")

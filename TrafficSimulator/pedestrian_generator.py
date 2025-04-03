@@ -21,10 +21,10 @@ class PedestrianGenerator:
             start_x -= offset if start_x > end_x else -offset
         return Pedestrian([start_x, start_y, end_x, end_y])
 
-    def update(self, curr_t: float, can_cross: bool):
+    def update(self, curr_t: float, can_h_cross: bool, can_v_cross: bool) -> None:
         """Generate pedestrians and process crossing requests."""
         for pedestrian in self._crossing_requests[:]:
-            pedestrian.update_state(can_cross)
+            pedestrian.update_state(can_h_cross, can_v_cross)
             if not pedestrian.is_crossing and (pedestrian.x == pedestrian.destination_x and pedestrian.y == pedestrian.destination_y):
                 self._crossing_requests.remove(pedestrian)
 

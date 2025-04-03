@@ -12,7 +12,8 @@ class TrafficSignal:
         self.slow_factor: float = slow_factor
         self.stop_distance: float = stop_distance
         self.prev_update_time: float = 0
-        self.pedestrian_signal = "Don't Walk"
+        self.can_cross_horizontal: bool = False
+        self.can_cross_vertical: bool = False
         for i in range(len(self.roads)):
             for road in self.roads[i]:
                 road.set_traffic_signal(self, i)
@@ -24,17 +25,19 @@ class TrafficSignal:
     def update(self):
         self.current_cycle_index = (self.current_cycle_index + 1) % len(self.cycle)
         self._update_pedestrian_signal()
+        print(f"New Cycle Index = {self.current_cycle_index}, "
+          f"Current Cycle = {self.cycle[self.current_cycle_index]}\n")
 
     def _update_pedestrian_signal(self):
-        
-        """Update the pedestrian signal based on the current cycle."""
-        # Example logic: Pedestrian signal is "Walk" when all vehicle signals are red
+        """Update the pedestrian signals based on the current cycle."""
         current_cycle = self.cycle[self.current_cycle_index]
-        if all(not state for state in current_cycle):  # All vehicle signals are red
-            self.pedestrian_signal = "Walk"
-        else:
-            self.pedestrian_signal = "Don't Walk"
 
-    def get_pedestrian_signal(self) -> str:
-        """Return the current pedestrian signal state."""
-        return self.pedestrian_signal
+        # Assign pedestrian signals based on the current cycle
+        self.can_cross_horizontal = current_cycle[1]  # Horizontal pedestrians can cross when vertical vehicles are moving
+        self.can_cross_vertical = current_cycle[0]  # Vertical pedestrians can cross when horizontal vehicles are moving
+
+        print(f"Updated Pedestrian Signals: Horizontal = {self.can_cross_horizontal}, Vertical = {self.can_cross_vertical}")
+
+    def get_pedestrian_signal(self) -> Tuple[bool, bool]:
+        """Return the current pedestrian signal states."""
+        return self.can_cross_horizontal, self.can_cross_vertical

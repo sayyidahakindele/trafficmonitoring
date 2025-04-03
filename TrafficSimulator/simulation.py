@@ -47,7 +47,6 @@ class Simulation:
         for road in roads:
             self.add_road(*road)
 
-
     def add_crosswalk(self, road_index: int, start: Tuple[int, int], end: Tuple[int, int]) -> None:
         if 0 <= road_index < len(self.roads):
             self.roads[road_index].add_crosswalk(start, end)
@@ -67,7 +66,6 @@ class Simulation:
         """Add a pedestrian generator to the simulation."""
         pedestrian_generator = PedestrianGenerator(pedestrian_rate, paths)
         self.pedestrian_generators.append(pedestrian_generator)
-
 
     def add_traffic_signal(self, roads: List[List[int]], cycle: List[Tuple],
                            slow_distance: float, slow_factor: float, stop_distance: float) -> None:
@@ -179,9 +177,12 @@ class Simulation:
                 self.n_vehicles_on_map += 1
                 self._non_empty_roads.add(road_index)
 
-        can_cross = self.can_pedestrians_cross()
+        horizontal_pedestrian_signal = any(signal.can_cross_horizontal for signal in self.traffic_signals)
+        vertical_pedestrian_signal = any(signal.can_cross_vertical for signal in self.traffic_signals)
+        pedestrian_signals = (horizontal_pedestrian_signal, vertical_pedestrian_signal)
+
         for pedestrian_gen in self.pedestrian_generators:
-            pedestrian_gen.update(self.t, can_cross)
+            pedestrian_gen.update(self.t, horizontal_pedestrian_signal, vertical_pedestrian_signal)
         self._check_out_of_bounds_vehicles()
 
         self._detect_collisions()
